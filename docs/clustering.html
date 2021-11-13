@@ -1,6 +1,6 @@
 ---
 
-title: Title
+title: Clustering Scientific articles
 
 
 keywords: fastai
@@ -87,6 +87,458 @@ nb_path: "clustering.ipynb"
     {% raw %}
     
 <div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Exporting-the-Zika-Corpus">Exporting the Zika Corpus<a class="anchor-link" href="#Exporting-the-Zika-Corpus"> </a></h2>
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sc</span> <span class="o">=</span> <span class="n">StreamCorpus</span><span class="p">(</span><span class="n">db</span><span class="o">=</span><span class="s1">&#39;pubmed&#39;</span><span class="p">,</span><span class="n">table</span><span class="o">=</span><span class="s1">&#39;articles&#39;</span><span class="p">,</span><span class="n">limit</span><span class="o">=</span><span class="mi">200000</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dump_to_corpus_file</span><span class="p">(</span><span class="n">sc</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model_d2v</span> <span class="o">=</span> <span class="n">Doc2Vec</span><span class="p">(</span><span class="n">documents</span><span class="o">=</span><span class="n">TaggedLineDocument</span><span class="p">(</span><span class="s1">&#39;pubmed_articles.txt&#39;</span><span class="p">),</span> <span class="n">workers</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Clustering-document-vectors">Clustering document vectors<a class="anchor-link" href="#Clustering-document-vectors"> </a></h2>
+</div>
+</div>
+</div>
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;pubmed_articles.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">corpus</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">corpus</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">list</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    {% endraw %}
+
+    {% raw %}
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">vectors</span><span class="o">=</span><span class="p">[]</span>
+<span class="k">for</span> <span class="n">doc_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">corpus</span><span class="p">[:</span><span class="mi">100</span><span class="p">])):</span>
+    <span class="n">inferred_vector</span> <span class="o">=</span> <span class="n">model_d2v</span><span class="o">.</span><span class="n">infer_vector</span><span class="p">(</span><span class="n">corpus</span><span class="p">[</span><span class="n">doc_id</span><span class="p">])</span>
+    <span class="n">vectors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">inferred_vector</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;doc</span><span class="si">%s</span><span class="s1">&#39;</span><span class="o">%</span><span class="k">i</span>: vec for i,vec in enumerate(vectors)}
+<span class="n">dfdoc</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="n">dfdoc</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>doc0</th>
+      <th>doc1</th>
+      <th>doc2</th>
+      <th>doc3</th>
+      <th>doc4</th>
+      <th>doc5</th>
+      <th>doc6</th>
+      <th>doc7</th>
+      <th>doc8</th>
+      <th>doc9</th>
+      <th>...</th>
+      <th>doc90</th>
+      <th>doc91</th>
+      <th>doc92</th>
+      <th>doc93</th>
+      <th>doc94</th>
+      <th>doc95</th>
+      <th>doc96</th>
+      <th>doc97</th>
+      <th>doc98</th>
+      <th>doc99</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.069430</td>
+      <td>-0.421044</td>
+      <td>-0.001847</td>
+      <td>-0.087948</td>
+      <td>-0.063527</td>
+      <td>-0.243469</td>
+      <td>-0.202967</td>
+      <td>0.050212</td>
+      <td>-0.242552</td>
+      <td>-0.121266</td>
+      <td>...</td>
+      <td>-0.007960</td>
+      <td>-0.175179</td>
+      <td>-0.188682</td>
+      <td>0.012522</td>
+      <td>-0.180649</td>
+      <td>-0.758794</td>
+      <td>-1.106029</td>
+      <td>0.121002</td>
+      <td>0.254131</td>
+      <td>-0.054589</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>-0.247528</td>
+      <td>-0.072153</td>
+      <td>0.171375</td>
+      <td>-0.349097</td>
+      <td>0.081594</td>
+      <td>-0.286460</td>
+      <td>0.237452</td>
+      <td>-0.283332</td>
+      <td>0.182731</td>
+      <td>-0.038998</td>
+      <td>...</td>
+      <td>0.145682</td>
+      <td>-0.020279</td>
+      <td>-0.035497</td>
+      <td>-0.032862</td>
+      <td>-0.028215</td>
+      <td>-0.297167</td>
+      <td>-0.343567</td>
+      <td>-0.449193</td>
+      <td>0.168492</td>
+      <td>-0.020127</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.189527</td>
+      <td>-0.229907</td>
+      <td>-0.059609</td>
+      <td>0.040008</td>
+      <td>0.161159</td>
+      <td>0.337340</td>
+      <td>-0.096310</td>
+      <td>-0.052384</td>
+      <td>-0.025961</td>
+      <td>-0.050096</td>
+      <td>...</td>
+      <td>-0.342162</td>
+      <td>0.135064</td>
+      <td>-0.087315</td>
+      <td>0.122326</td>
+      <td>-0.014181</td>
+      <td>0.202361</td>
+      <td>0.027263</td>
+      <td>-0.081591</td>
+      <td>-0.090823</td>
+      <td>-0.038863</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>-0.305265</td>
+      <td>-0.067182</td>
+      <td>-0.224358</td>
+      <td>-0.123617</td>
+      <td>-0.129267</td>
+      <td>-0.331012</td>
+      <td>-0.205083</td>
+      <td>-0.089477</td>
+      <td>-0.477119</td>
+      <td>-0.371206</td>
+      <td>...</td>
+      <td>-0.153440</td>
+      <td>-0.224672</td>
+      <td>-0.382509</td>
+      <td>-0.188764</td>
+      <td>-0.312080</td>
+      <td>-0.050051</td>
+      <td>0.079258</td>
+      <td>-0.279056</td>
+      <td>0.064057</td>
+      <td>-0.151491</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>-0.061405</td>
+      <td>0.697413</td>
+      <td>0.038556</td>
+      <td>-0.298351</td>
+      <td>-0.157049</td>
+      <td>0.035213</td>
+      <td>0.298442</td>
+      <td>-0.306796</td>
+      <td>0.079836</td>
+      <td>0.198863</td>
+      <td>...</td>
+      <td>-0.204478</td>
+      <td>0.004795</td>
+      <td>-0.126659</td>
+      <td>-0.162729</td>
+      <td>0.143098</td>
+      <td>-0.002489</td>
+      <td>-0.126235</td>
+      <td>0.237628</td>
+      <td>-0.035629</td>
+      <td>-0.077023</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>95</th>
+      <td>-0.068436</td>
+      <td>0.301666</td>
+      <td>0.330341</td>
+      <td>0.015520</td>
+      <td>0.169549</td>
+      <td>0.238084</td>
+      <td>0.293617</td>
+      <td>0.430693</td>
+      <td>0.012850</td>
+      <td>0.478643</td>
+      <td>...</td>
+      <td>-0.145332</td>
+      <td>0.170866</td>
+      <td>-0.527152</td>
+      <td>0.116509</td>
+      <td>0.160907</td>
+      <td>1.133863</td>
+      <td>0.207418</td>
+      <td>0.283560</td>
+      <td>0.470678</td>
+      <td>0.028682</td>
+    </tr>
+    <tr>
+      <th>96</th>
+      <td>0.086688</td>
+      <td>0.022882</td>
+      <td>-0.088707</td>
+      <td>0.134623</td>
+      <td>-0.129202</td>
+      <td>-0.012671</td>
+      <td>-0.307745</td>
+      <td>-0.022192</td>
+      <td>0.159225</td>
+      <td>0.128745</td>
+      <td>...</td>
+      <td>0.844146</td>
+      <td>0.109632</td>
+      <td>-0.473581</td>
+      <td>0.204370</td>
+      <td>0.018080</td>
+      <td>0.114282</td>
+      <td>-0.225577</td>
+      <td>-0.167714</td>
+      <td>0.178417</td>
+      <td>0.033449</td>
+    </tr>
+    <tr>
+      <th>97</th>
+      <td>-0.310323</td>
+      <td>-0.297117</td>
+      <td>0.009480</td>
+      <td>-0.588941</td>
+      <td>-0.354622</td>
+      <td>-0.359688</td>
+      <td>-0.092746</td>
+      <td>-0.149128</td>
+      <td>0.082603</td>
+      <td>-0.159467</td>
+      <td>...</td>
+      <td>0.150431</td>
+      <td>-0.076164</td>
+      <td>-0.331648</td>
+      <td>-0.432440</td>
+      <td>-0.145752</td>
+      <td>0.220049</td>
+      <td>0.210488</td>
+      <td>-0.329466</td>
+      <td>-0.733340</td>
+      <td>-0.094844</td>
+    </tr>
+    <tr>
+      <th>98</th>
+      <td>0.249775</td>
+      <td>0.355903</td>
+      <td>0.261534</td>
+      <td>-0.041132</td>
+      <td>0.213038</td>
+      <td>0.886465</td>
+      <td>-0.273081</td>
+      <td>0.139248</td>
+      <td>0.604815</td>
+      <td>0.224035</td>
+      <td>...</td>
+      <td>1.076010</td>
+      <td>0.266583</td>
+      <td>-0.397739</td>
+      <td>0.147876</td>
+      <td>0.163680</td>
+      <td>-0.122493</td>
+      <td>0.522050</td>
+      <td>0.490753</td>
+      <td>-0.281808</td>
+      <td>0.117240</td>
+    </tr>
+    <tr>
+      <th>99</th>
+      <td>0.145066</td>
+      <td>-0.487096</td>
+      <td>-0.666022</td>
+      <td>-0.036405</td>
+      <td>-0.008419</td>
+      <td>-0.439064</td>
+      <td>-0.265303</td>
+      <td>-0.562044</td>
+      <td>-0.219272</td>
+      <td>-0.314292</td>
+      <td>...</td>
+      <td>0.468831</td>
+      <td>-0.317039</td>
+      <td>-0.028950</td>
+      <td>-0.267977</td>
+      <td>-0.082407</td>
+      <td>-0.508370</td>
+      <td>-0.312353</td>
+      <td>-0.115414</td>
+      <td>-0.133120</td>
+      <td>-0.152427</td>
+    </tr>
+  </tbody>
+</table>
+<p>100 rows × 100 columns</p>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
 
 </div>
     {% endraw %}

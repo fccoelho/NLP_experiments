@@ -37,3 +37,8 @@ class StreamCorpus(object):
 
 def dump_to_corpus_file(stream_corpus):
     save_as_line_sentence(stream_corpus, f'{stream_corpus.db}_{stream_corpus.table}.txt')
+
+# Cell
+import pandas as pd
+import seaborn as sns
+import numpy as np
