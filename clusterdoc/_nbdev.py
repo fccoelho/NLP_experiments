@@ -2,10 +2,16 @@
 
 __all__ = ["index", "modules", "custom_doc_links", "git_url"]
 
-index = {"StreamCorpus": "clustering.ipynb",
-         "dump_to_corpus_file": "clustering.ipynb"}
+index = {"summarizer": "Document Sumarization.ipynb",
+         "summarize": "Document Sumarization.ipynb",
+         "StreamCorpus": "clustering.ipynb",
+         "dump_to_corpus_file": "clustering.ipynb",
+         "SemanticNetwork": "network_embeding.ipynb",
+         "get_clusters": "network_embeding.ipynb"}
 
-modules = ["clusterdoc.py"]
+modules = ["summarization.py",
+           "clusterdoc.py",
+           "network_embedding.py"]
 
 doc_url = "https://fccoelho.github.io/clusterdoc/"
 
