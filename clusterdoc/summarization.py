@@ -13,7 +13,7 @@ summarizer = pipeline("summarization")
 
 # Cell
 @interact(id=(0, len(df)))
-def summarize(id=20):
+def summarize(id=23):
     text = df.iloc[id].abstract.strip()
     title = df.iloc[id].title
     su = summarizer(text, max_length=len(text.split()), min_length=30, do_sample=False)
